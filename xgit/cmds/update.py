@@ -17,6 +17,7 @@ from xarg import run_command
 
 from ..utils.git import list_all_references
 from ..utils.git import list_all_remote_references
+from ..utils.git import list_local_branches
 
 
 @add_command("safe-sync", help="safely sync with another reference",
@@ -26,13 +27,14 @@ def add_cmd_safe_sync(_arg: argp):
     args = _arg.preparse_from_sys_argv()
     repo = Repo(path=args.workdir[0])
     active_branch = repo.active_branch.name
+    local_branches = list_local_branches(repo=repo)
     _arg.add_opt_on("--disable-fetch", help="disable fetch remote before sync")
     _arg.add_argument("--push-to-remote", type=str, nargs="?",
                       const="", default=None, metavar="REFERENCE",
                       choices=list_all_remote_references(repo=repo) + [""],
                       help="push active branch to remote after success")
     _arg.add_argument("--active-branch", type=str, nargs=1, metavar="BRANCH",
-                      default=[active_branch], choices=repo.branches,
+                      default=[active_branch], choices=local_branches,
                       help=f"switch to branch, default '{active_branch}'")
     _arg.add_argument("sync_reference", type=str, nargs=1, metavar="REFERENCE",
                       choices=list_all_references(repo=repo),

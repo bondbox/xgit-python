@@ -29,14 +29,22 @@ def list_all_remote_references(repo: Optional[Repo] = None,
         return list()
 
 
+def list_local_branches(repo: Optional[Repo] = None,
+                        workdir: Optional[str] = None) -> List[str]:
+    try:
+        _repo = repo or Repo(path=workdir)
+        return [_branch.name for _branch in _repo.branches]
+    except BaseException:
+        return list()
+
+
 def list_all_branches(repo: Optional[Repo] = None,
                       workdir: Optional[str] = None) -> List[str]:
     try:
         _repo = repo or Repo(path=workdir)
-        branches = ["HEAD"]
-        branches.extend([branch.name for branch in _repo.branches])
-        for remote in _repo.remotes:
-            branches.extend([ref.name for ref in remote.refs])
+        branches = [_branch.name for _branch in _repo.branches]
+        for _remote in _repo.remotes:
+            branches.extend([_ref.name for _ref in _remote.refs])
         return branches
     except BaseException:
         return list()
